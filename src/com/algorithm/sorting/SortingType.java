@@ -5,104 +5,95 @@ package com.algorithm.sorting;
  * @date Aug 23, 2012 3:06:18 PM
  */
 public enum SortingType {
-	/**
-	 * 1、选择排序
-	 */
-	SELECTION(new Sortable() {
-		
-		@Override
-		public <T extends Comparable<T>> void sort(T[] array, boolean ascend) {
-			for (int i = 0; i < array.length - 1; i++) {
-				int selected = i;
-				for (int j = i + 1; j < array.length; j++) {
-					int cs = array[j].compareTo(array[selected]);
-					if (cs != 0 && cs < 0 == ascend) {
-						selected = j;
-					}
-				}
-//				printDetail(array, i, selected, i + 1);
-				exchange(array, selected, i);
-			}
-		}
-		
-	}),
-	
-	/**
-	 * 2、插入排序
-	 */
-	INSERTION(new Sortable() {
 
-		@Override
-		public <T extends Comparable<T>> void sort(T[] array, boolean ascend) {
-			for (int i = 1; i < array.length; i++) {
-				T tmp = array[i];
-				int j;
-				for (j = i - 1; j >= 0; j--) {
-					int cs = array[j].compareTo(tmp);
-					if (cs == 0 || cs < 0 == ascend) break;
-					array[j + 1] = array[j];
-				}
-				array[j + 1] = tmp;
-			}
-		}
-		
-	}),
-	
 	/**
-	 * 3、冒泡排序
+	 * 1、冒泡排序
 	 */
 	BUBBLE(new Sortable() {
 
 		@Override
-		public <T extends Comparable<T>> void sort(T[] array, boolean ascend) {
-			int pointer = Integer.MAX_VALUE;//优化一
-			int num = 1;
-			for (int i = array.length - 1; i > 0; i--) {
-				boolean isChanged = false;//优化二
-				int max = pointer < i ? pointer : i;
-				for (int j = 0; j < max; j++) {
-					int cs = array[j + 1].compareTo(array[j]);
-					if (cs != 0 && cs < 0 == ascend) {
-//						printDetail(array, j, j + 1, num++);
-						exchange(array, j + 1, j);
-						pointer = j;
-						isChanged = true;
+		public <T extends Comparable<T>> void sort(T[] arr, boolean ascending) {
+			int lastSwappedIndex = Integer.MAX_VALUE;// 优化一
+			for (int i = arr.length - 1; i > 0; i--) {
+				boolean alreadyOrdered = true;// 优化二
+				int endPoint = lastSwappedIndex < i ? lastSwappedIndex : i;
+				for (int j = 0; j < endPoint; j++) {
+					if (arr[j + 1].compareTo(arr[j]) < 0 == ascending) {
+						swap(arr, j, j + 1);
+						lastSwappedIndex = j;
+						alreadyOrdered = false;
 					}
 				}
-				/**
-				 * 如果某次遍历发现没有数据进行过交换，那么说明该数组已经有序。
-				 */
-				if (!isChanged) break;
+				if (alreadyOrdered) break;// 如果某次遍历发现没有进行过交换操作，那么说明该数组已经有序可以结束了。
 			}
-//			printDetail(array, -1, -1, num++);
+		}
+
+	}),
+
+	/**
+	 * 2、选择排序
+	 */
+	SELECT(new Sortable() {
+		
+		@Override
+		public <T extends Comparable<T>> void sort(T[] arr, boolean ascending) {
+			for (int i = 0; i < arr.length - 1; i++) {
+				int selected = i;
+				for (int j = i + 1; j < arr.length; j++) {
+					if (arr[j].compareTo(arr[selected]) < 0 == ascending) {
+						selected = j;
+					}
+				}
+				swap(arr, selected, i);
+			}
 		}
 		
 	}),
 	
+	/**
+	 * 3、插入排序
+	 */
+	INSERT(new Sortable() {
+
+		@Override
+		public <T extends Comparable<T>> void sort(T[] arr, boolean ascending) {
+			for (int i = 1; i < arr.length; i++) {
+				T tmp = arr[i];
+				int j;
+				for (j = i - 1; j >= 0; j--) {
+					int res = arr[j].compareTo(tmp);
+					if (res == 0 || res < 0 == ascending) break;
+					arr[j + 1] = arr[j];
+				}
+				arr[j + 1] = tmp;
+			}
+		}
+		
+	}),
+
 	/**
 	 * 4、希尔排序
 	 */
 	SHELL(new Sortable() {
 
 		@Override
-		public <T extends Comparable<T>> void sort(T[] array, boolean ascend) {
-			int gap = 1;
-			while (gap < array.length / 3) {
-				gap = gap * 3 + 1;
+		public <T extends Comparable<T>> void sort(T[] arr, boolean ascending) {
+			int gap = 1, divider = 3;
+			while (gap < arr.length / divider) {
+				gap = gap * divider + 1;
 			}
 			while (gap >= 1) {
-				for (int i = gap; i < array.length; i++) {
-					T tmp = array[i];
-					int j = i;
-					while (j >= gap) {
-						int cs = array[j - gap].compareTo(tmp);
-						if (cs == 0 || cs < 0 == ascend ) break;
-						array[j] = array[j - gap];
-						j -= gap;
+				for (int i = gap; i < arr.length; i++) {
+					T tmp = arr[i];
+					int j;
+					for (j = i; j >= gap; j -= gap) {
+						int res = arr[j - gap].compareTo(tmp);
+						if (res == 0 || res < 0 == ascending) break;
+						arr[j] = arr[j - gap];
 					}
-					if (j != i) array[j] = tmp;
+					if (j != i) arr[j] = tmp;
 				}
-				gap /= 3;
+				gap /= divider;
 			}
 		}
 		
@@ -114,56 +105,55 @@ public enum SortingType {
 	MERGE(new Sortable() {
 
 		@Override
-		public <T extends Comparable<T>> void sort(T[] array, boolean ascend) {
-			sort(array, ascend, 0, array.length - 1);
+		public <T extends Comparable<T>> void sort(T[] arr, boolean ascending) {
+			sort(arr, 0, arr.length, 50, ascending);
 		}
 		
-		public <T extends Comparable<T>> void sort(T[] array, boolean ascend, int low, int high) {
-			int length = high - low + 1;
-			//个数小于20时使用插入排序
-			if (length < 20) {
-				for (int i = low + 1; i <= high; i++) {
-					T tmp = array[i];
+		public <T extends Comparable<T>> void sort(T[] arr, int start, int end, int threshold, boolean ascending) {
+			int length = end - start;
+			if (length <= threshold) {
+				for (int i = start + 1; i < end; i++) {
+					T tmp = arr[i];
 					int j;
-					for (j = i - 1; j >= low; j--) {
-						int cs = array[j].compareTo(tmp);
-						if (cs == 0 || cs < 0 == ascend) break;
-						array[j + 1] = array[j];
+					for (j = i; j > start; j--) {
+						int res = arr[j - 1].compareTo(tmp);
+						if (res == 0 || res < 0 == ascending) break;
+						arr[j] = arr[j - 1];
 					}
-					array[j + 1] = tmp;
+					if (j != i) arr[j] = tmp;
 				}
 				return;
 			}
-			int mid = (low + high) / 2;
-			sort(array, ascend, low, mid);
-			sort(array, ascend, mid + 1, high);
-			merge(array, ascend, low, mid, high);
+			int middle = (start + end) / 2;
+			sort(arr, start, middle + 1, threshold, ascending);
+			sort(arr, middle + 1, end, threshold, ascending);
+			merge(arr, start, middle, end, ascending);
 		}
 		
-		private <T extends Comparable<T>> void merge(T[] array, boolean ascend, int low, int mid, int high) {
+		private <T extends Comparable<T>> void merge(T[] arr, int start, int middle, int end, boolean ascending) {
+			int leftEndCompareToRightStart = arr[middle].compareTo(arr[middle + 1]);
+			if (leftEndCompareToRightStart == 0 || leftEndCompareToRightStart < 0 == ascending) return;
 			
-			int leftEndCompareToRightStart = array[mid].compareTo(array[mid + 1]);
-			if (leftEndCompareToRightStart == 0 || leftEndCompareToRightStart < 0 == ascend) return;
-			
-			int length = high - low + 1;
-			@SuppressWarnings("unchecked")
-			T[] copy = (T[])new Comparable[length];
-			System.arraycopy(array, low, copy, 0, length);
-			
-			int lowIndex = 0;
-			int highIndex = mid - low + 1;
-			for (int i = low; i <= high; i++) {
-				if (lowIndex > mid - low) {
-					array[i] = copy[highIndex++];
-				} else if (highIndex > high - low) {
-					array[i] = copy[lowIndex++];
-				} else if (copy[lowIndex].compareTo(copy[highIndex]) < 0 == ascend) {
-					array[i] = copy[lowIndex++];
-				} else {
-					array[i] = copy[highIndex++];
+			int length = end - start;
+			T[] kakashi = (T[])new Comparable[length];
+			System.arraycopy(arr, start, kakashi, 0, length);
+
+			int leftIndex = 0, splitIndex = middle + 1 - start, rightIndex = splitIndex, index = start;
+			while (leftIndex < splitIndex && rightIndex < length) {
+				if (kakashi[leftIndex].compareTo(kakashi[rightIndex]) == 0) {
+					arr[index++] = kakashi[leftIndex++];
+					arr[index++] = kakashi[rightIndex++];
+				} else if (kakashi[leftIndex].compareTo(kakashi[rightIndex]) < 0 == ascending) {
+					arr[index++] = kakashi[leftIndex++];
+				} else if (kakashi[leftIndex].compareTo(kakashi[rightIndex]) > 0 == ascending) {
+					arr[index++] = kakashi[rightIndex++];
 				}
 			}
-			
+			if (leftIndex == splitIndex) {
+				System.arraycopy(kakashi, rightIndex, arr, index, length - rightIndex);
+			} else if (rightIndex == length) {
+				System.arraycopy(kakashi, leftIndex, arr, index, splitIndex - leftIndex);
+			}
 		}
 	}),
 	
@@ -173,42 +163,35 @@ public enum SortingType {
 	QUICK(new Sortable() {
 
 		@Override
-		public <T extends Comparable<T>> void sort(T[] array, boolean ascend) {
-			sort(array, ascend, 0, array.length - 1);
+		public <T extends Comparable<T>> void sort(T[] arr, boolean ascending) {
+			sort(arr, 0, arr.length, ascending);
 		}
-		
-		private <T extends Comparable<T>> void sort(T[] array, boolean ascend, int low, int high) {
-			if (low >= high) return;
-			int left = low + 1;
-			int right = high;
-			int hole = low;
-			boolean flag = false;
-			T tmp = array[low];
-			while (left <= right) {
-				if (flag) {
-					while (left <= right) {
-						int cs = array[left].compareTo(tmp);
-						if (cs != 0 && cs > 0 == ascend) {
-							array[hole] = array[left];
-							hole = left++;
-							break;
-						} else left++;
+
+		private <T extends Comparable<T>> void sort(T[] arr, int start, int end, boolean ascending) {
+			if (start >= end - 1) return;
+			int holeIndex = start, leftIndex = start + 1, rightIndex = end - 1;
+			boolean leftToRight = false;
+			T holeValue = arr[holeIndex];
+			while (leftIndex <= rightIndex) {
+				if (leftToRight) {
+					while (leftIndex <= rightIndex && holeValue.compareTo(arr[leftIndex]) < 0 != ascending) leftIndex++;
+					if (leftIndex <= rightIndex) {
+						arr[holeIndex] = arr[leftIndex];
+						holeIndex = leftIndex++;
+						leftToRight = false;
 					}
 				} else {
-					while (left <= right) {
-						int cs = array[right].compareTo(tmp);
-						if (cs != 0 && cs < 0 == ascend) {
-							array[hole] = array[right];
-							hole = right--;
-							break;
-						} else right--;
+					while (leftIndex <= rightIndex && arr[rightIndex].compareTo(holeValue) < 0 != ascending) rightIndex--;
+					if (leftIndex <= rightIndex) {
+						arr[holeIndex] = arr[rightIndex];
+						holeIndex = rightIndex--;
+						leftToRight = true;
 					}
 				}
-				flag = !flag;
 			}
-			array[hole] = tmp;
-			sort(array, ascend, low, hole - 1);
-			sort(array, ascend, hole + 1, high);
+			arr[holeIndex] = holeValue;
+			sort(arr, start, holeIndex, ascending);
+			sort(arr, holeIndex + 1, end, ascending);
 		}
 		
 	}),
@@ -219,8 +202,8 @@ public enum SortingType {
 	HEAP2(new Sortable() {
 
 		@Override
-		public <T extends Comparable<T>> void sort(T[] array, boolean ascend) {
-			heapSort(array, ascend, 2);
+		public <T extends Comparable<T>> void sort(T[] arr, boolean ascend) {
+			heapSort(arr, ascend, 2);
 		}
 		
 	}),
@@ -228,8 +211,8 @@ public enum SortingType {
 	HEAP3(new Sortable() {
 		
 		@Override
-		public <T extends Comparable<T>> void sort(T[] array, boolean ascend) {
-			heapSort(array, ascend, 3);
+		public <T extends Comparable<T>> void sort(T[] arr, boolean ascend) {
+			heapSort(arr, ascend, 3);
 		}
 		
 	}),
@@ -237,8 +220,8 @@ public enum SortingType {
 	HEAP4(new Sortable() {
 		
 		@Override
-		public <T extends Comparable<T>> void sort(T[] array, boolean ascend) {
-			heapSort(array, ascend, 4);
+		public <T extends Comparable<T>> void sort(T[] arr, boolean ascend) {
+			heapSort(arr, ascend, 4);
 		}
 		
 	}),
@@ -246,8 +229,8 @@ public enum SortingType {
 	HEAP5(new Sortable() {
 		
 		@Override
-		public <T extends Comparable<T>> void sort(T[] array, boolean ascend) {
-			heapSort(array, ascend, 5);
+		public <T extends Comparable<T>> void sort(T[] arr, boolean ascend) {
+			heapSort(arr, ascend, 5);
 		}
 		
 	}),
@@ -255,8 +238,8 @@ public enum SortingType {
 	HEAP6(new Sortable() {
 		
 		@Override
-		public <T extends Comparable<T>> void sort(T[] array, boolean ascend) {
-			heapSort(array, ascend, 6);
+		public <T extends Comparable<T>> void sort(T[] arr, boolean ascend) {
+			heapSort(arr, ascend, 6);
 		}
 		
 	}),
@@ -264,8 +247,8 @@ public enum SortingType {
 	HEAP7(new Sortable() {
 		
 		@Override
-		public <T extends Comparable<T>> void sort(T[] array, boolean ascend) {
-			heapSort(array, ascend, 7);
+		public <T extends Comparable<T>> void sort(T[] arr, boolean ascend) {
+			heapSort(arr, ascend, 7);
 		}
 		
 	}),
@@ -273,8 +256,8 @@ public enum SortingType {
 	HEAP8(new Sortable() {
 		
 		@Override
-		public <T extends Comparable<T>> void sort(T[] array, boolean ascend) {
-			heapSort(array, ascend, 8);
+		public <T extends Comparable<T>> void sort(T[] arr, boolean ascend) {
+			heapSort(arr, ascend, 8);
 		}
 		
 	}),
@@ -282,96 +265,96 @@ public enum SortingType {
 	HEAP9(new Sortable() {
 		
 		@Override
-		public <T extends Comparable<T>> void sort(T[] array, boolean ascend) {
-			heapSort(array, ascend, 9);
+		public <T extends Comparable<T>> void sort(T[] arr, boolean ascend) {
+			heapSort(arr, ascend, 9);
 		}
 		
 	});
 	
-	private SortingType(Sortable s) {
+	SortingType(Sortable s) {
 		this.s = s;
 	}
 	
 	private Sortable s;
 	
-	public <T extends Comparable<T>> void sort(T[] array, boolean ascend) {
-		s.sort(array, ascend);
+	public <T extends Comparable<T>> void sort(T[] arr, boolean ascend) {
+		s.sort(arr, ascend);
 	}
 	
-	private static <T extends Comparable<T>> void exchange(T[] array,int i,int j) {
+	private static <T extends Comparable<T>> void swap(T[] arr, int i, int j) {
 		if (i == j) return;
-		T tmp = array[i];
-		array[i] = array[j];
-		array[j] = tmp;
+		T tmp = arr[i];
+		arr[i] = arr[j];
+		arr[j] = tmp;
 	}
 	
 	/**
 	 * N叉堆的入口方法
-	 * @param array
+	 * @param arr
 	 * @param ascend
 	 */
-	private static <T extends Comparable<T>> void heapSort(T[] array, boolean ascend, int size) {
-		build(array, ascend, size);//构建二叉堆
-//		System.out.println(Arrays.toString(array));
-		for (int i = array.length - 1; i > 0; i--) {
-			exchange(array, 0, i);
-			sink(array, i, 0, ascend, size);//重构二叉堆
+	private static <T extends Comparable<T>> void heapSort(T[] arr, boolean ascend, int size) {
+		build(arr, ascend, size);//构建二叉堆
+//		System.out.println(Arrays.toString(srcArr));
+		for (int i = arr.length - 1; i > 0; i--) {
+			swap(arr, 0, i);
+			sink(arr, i, 0, ascend, size);//重构二叉堆
 		}
 	}
 	
-	private static <T extends Comparable<T>> void build(T[] array, boolean ascend, int size) {
-		for (int i = (array.length - 2) / size; i >= 0; i--) {
-			sink(array, array.length, i, ascend, size);
+	private static <T extends Comparable<T>> void build(T[] arr, boolean ascend, int size) {
+		for (int i = (arr.length - 2) / size; i >= 0; i--) {
+			sink(arr, arr.length, i, ascend, size);
 		}
 	}
 	
 	/**
-	 * 对array[start]节点执行二叉堆重构
-	 * @param array
+	 * 对arr[start]节点执行二叉堆重构
+	 * @param arr
 	 * @param length
 	 * @param start
 	 * @param ascend
 	 */
-	private static <T extends Comparable<T>> void sink(T[] array, int length, int start, boolean ascend, int size) {
-		T tmp = array[start];
+	private static <T extends Comparable<T>> void sink(T[] arr, int length, int start, boolean ascend, int size) {
+		T tmp = arr[start];
 		int hole = start;
 		int index = start * size + 1;
 		while (index < length) {
 			int rightChild = index + size - 1;
 			for (int i = index + 1; i < length && i <= rightChild; i++) {
-				int cs = array[i].compareTo(array[index]);
+				int cs = arr[i].compareTo(arr[index]);
 				if (cs > 0 == ascend) index = i;
 			}
 //			if (index + 1 < length) {
-//				int cs = array[index + 1].compareTo(array[index]);
+//				int cs = srcArr[index + 1].compareTo(srcArr[index]);
 //				if (cs > 0 == ascend) index++;
 //			}
-			int cs = array[index].compareTo(tmp);
+			int cs = arr[index].compareTo(tmp);
 			if (cs > 0 == ascend) {
-				array[hole] = array[index];
+				arr[hole] = arr[index];
 				hole = index;
 				index = index * size + 1;
 			} else break;
 		}
-		array[hole] = tmp;
+		arr[hole] = tmp;
 	}
 	
 	/**
 	 * 打印数组，用于测试
-	 * @param array
+	 * @param arr
 	 * @param src
 	 * @param dest
 	 */
-	public static <T extends Comparable<T>> void printDetail(T[] array, int src, int dest, int num) {
+	public static <T extends Comparable<T>> void printDetail(T[] arr, int src, int dest, int num) {
 		System.out.print(num + " - [");
-		for (int k = 0; k < array.length; k++) {
+		for (int k = 0; k < arr.length; k++) {
 			if (k > 0) System.out.print(",");
 			if (k == src) {
-				System.out.printf("%4s", "*" + array[src]);
+				System.out.printf("%4s", "*" + arr[src]);
 			} else if (k == dest) {
-				System.out.printf("%4s", "@" + array[k]);
+				System.out.printf("%4s", "@" + arr[k]);
 			} else {
-				System.out.printf("%4s", array[k]);
+				System.out.printf("%4s", arr[k]);
 			}
 		}
 		System.out.println("]");
@@ -379,15 +362,13 @@ public enum SortingType {
 	
 	/**
 	 * 打印数组，用于测试
-	 * @param array
-	 * @param src
-	 * @param dest
+	 * @param arr
 	 */
-	public static <T extends Comparable<T>> void printDetail(T[] array) {
+	public static <T extends Comparable<T>> void printDetail(T[] arr) {
 		System.out.print("R - [");
-		for (int k = 0; k < array.length; k++) {
+		for (int k = 0; k < arr.length; k++) {
 			if (k > 0) System.out.print(",");
-			System.out.printf("%4s", array[k]);
+			System.out.printf("%4s", arr[k]);
 		}
 		System.out.println("]");
 	}

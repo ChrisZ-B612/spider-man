@@ -1,11 +1,12 @@
 package com.algorithm.sorting;
 
-import java.util.Arrays;
-import java.util.Random;
-
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
-import junit.framework.Assert;
+
+import java.util.*;
 
 /**
  * @author biao.zhang@hp.com
@@ -13,32 +14,54 @@ import junit.framework.Assert;
  */
 public class SortingTest {
 
-	@Test
-	public void selection() {
-		sort(SortingType.SELECTION);
+    private static Integer[] srcArr;
+    private static boolean ascending = false;
+	private static Map<String, Long> map = new HashMap<>();
+
+	@BeforeClass
+	public static void start() {
+		int size = 10000000;
+		System.out.printf("Size: %d\n", size);
+		srcArr = generateArray(size);
+		map = new HashMap<>();
 	}
-	
-//	@Test
-	public void insertion() {
-		sort(SortingType.INSERTION);
+
+	@AfterClass
+	public static void finish() {
+		List<Map.Entry<String, Long>> list = new LinkedList<Map.Entry<String, Long>>(map.entrySet());
+		Collections.sort(list, Comparator.comparingLong(Map.Entry::getValue));
+		for (Iterator<Map.Entry<String, Long>> it = list.iterator(); it.hasNext(); ) {
+			Map.Entry<String, Long> next = it.next();
+			System.out.printf("%-6s: [%-3sms]\n", next.getKey(), next.getValue());
+		}
 	}
-	
+
 //	@Test
 	public void bubble() {
 		sort(SortingType.BUBBLE);
 	}
-	
+
 //	@Test
+	public void select() {
+		sort(SortingType.SELECT);
+	}
+
+//	@Test
+	public void insert() {
+		sort(SortingType.INSERT);
+	}
+
+	@Test
 	public void shell() {
 		sort(SortingType.SHELL);
 	}
 	
-//	@Test
+	@Test
 	public void merge() {
 		sort(SortingType.MERGE);
 	}
 	
-//	@Test
+	@Test
 	public void quick() {
 		sort(SortingType.QUICK);
 	}
@@ -82,15 +105,14 @@ public class SortingTest {
 	public void heap9() {
 		sort(SortingType.HEAP9);
 	}
-	
+
 	private static void sort(SortingType type) {
-//		Integer[] array = generateArray(5);
-		Integer[] array = new Integer[]{2, 8, 1, 5, 3, 1};
-		boolean ascend = true;
-		System.out.println(type.name() + " - Before(" + isOrdered(array, ascend) + ") : " + Arrays.toString(array));
-		type.sort(array, ascend);
-		System.out.println(type.name() + " - After(" + isOrdered(array, ascend) + ") : " + Arrays.toString(array));
-		Assert.assertTrue(isOrdered(array, ascend));
+        Integer[] myArr = srcArr.clone();
+		Assert.assertFalse(isOrdered(myArr, ascending));
+        long start = Calendar.getInstance().getTimeInMillis();
+        type.sort(myArr, ascending);
+		map.put(type.name(), Calendar.getInstance().getTimeInMillis() - start);
+		Assert.assertTrue(isOrdered(myArr, ascending));
 	}
 	
 	private static Integer[] generateArray(int length) {
@@ -102,12 +124,14 @@ public class SortingTest {
 		return array;
 	}
 	
-	private static boolean isOrdered(Comparable[] array, boolean ascend) {
+	private static boolean isOrdered(Comparable[] array, boolean ascending) {
+		boolean isOrdered = true;
 		for (int i = 0; i < array.length - 1; i++) {
-			int cs = array[i].compareTo(array[i + 1]);
-			if (cs != 0 && cs < 0 != ascend) return false;
+			if (array[i].compareTo(array[i + 1]) == 0 || array[i].compareTo(array[i + 1]) < 0 == ascending) continue;
+			isOrdered = false;
+			break;
 		}
-		return true;
+		return isOrdered;
 	}
 	
 }
