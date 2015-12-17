@@ -155,6 +155,7 @@ public enum SortingType {
 				System.arraycopy(kakashi, leftIndex, arr, index, splitIndex - leftIndex);
 			}
 		}
+
 	}),
 	
 	/**
@@ -199,86 +200,78 @@ public enum SortingType {
 	/**
 	 * 7、堆排序
 	 */
-	HEAP2(new Sortable() {
+	HEAP(new Sortable() {
 
 		@Override
-		public <T extends Comparable<T>> void sort(T[] arr, boolean ascend) {
-			heapSort(arr, ascend, 2);
+		public <T extends Comparable<T>> void sort(T[] arr, boolean ascending) {
+			heapSort(arr, ascending, 3);
 		}
-		
-	}),
-	
-	HEAP3(new Sortable() {
-		
-		@Override
-		public <T extends Comparable<T>> void sort(T[] arr, boolean ascend) {
-			heapSort(arr, ascend, 3);
-		}
-		
-	}),
-	
-	HEAP4(new Sortable() {
-		
-		@Override
-		public <T extends Comparable<T>> void sort(T[] arr, boolean ascend) {
-			heapSort(arr, ascend, 4);
-		}
-		
-	}),
-	
-	HEAP5(new Sortable() {
-		
-		@Override
-		public <T extends Comparable<T>> void sort(T[] arr, boolean ascend) {
-			heapSort(arr, ascend, 5);
-		}
-		
-	}),
-	
-	HEAP6(new Sortable() {
-		
-		@Override
-		public <T extends Comparable<T>> void sort(T[] arr, boolean ascend) {
-			heapSort(arr, ascend, 6);
-		}
-		
-	}),
-	
-	HEAP7(new Sortable() {
-		
-		@Override
-		public <T extends Comparable<T>> void sort(T[] arr, boolean ascend) {
-			heapSort(arr, ascend, 7);
-		}
-		
-	}),
-	
-	HEAP8(new Sortable() {
-		
-		@Override
-		public <T extends Comparable<T>> void sort(T[] arr, boolean ascend) {
-			heapSort(arr, ascend, 8);
-		}
-		
-	}),
-	
-	HEAP9(new Sortable() {
-		
-		@Override
-		public <T extends Comparable<T>> void sort(T[] arr, boolean ascend) {
-			heapSort(arr, ascend, 9);
-		}
+
+        /**
+         * N叉堆的入口方法
+         * @param arr
+         * @param ascending
+         * @param N
+         */
+        private <T extends Comparable<T>> void heapSort(T[] arr, boolean ascending, int N) {
+            build(arr, ascending, N);// 构建N叉堆
+            for (int i = arr.length - 1; i > 0; i--) {
+                swap(arr, 0, i);
+                sink(arr, i, 0, ascending, N);// 重构N叉堆
+            }
+        }
+
+        /**
+         * 数组元素从0顺序开始，和N叉堆从上到下从左到右的树节点一一对应，所以N叉堆其实是完全N叉堆
+         * @param arr
+         * @param ascending
+         * @param N
+         * @param <T>
+         */
+        private <T extends Comparable<T>> void build(T[] arr, boolean ascending, int N) {
+            for (int i = (arr.length - 2) / N; i >= 0; i--) {
+                sink(arr, arr.length, i, ascending, N);
+            }
+        }
+
+        /**
+         * 以arr[start]节点为根节点开始执行N叉堆重构
+         * @param arr
+         * @param length
+         * @param start
+         * @param ascending
+         * @param N
+         */
+        private <T extends Comparable<T>> void sink(T[] arr, int length, int start, boolean ascending, int N) {
+            T holeVal = arr[start];
+            int holeIdx = start;
+            int index = start * N + 1;// start的左节点index
+            while (index < length) {
+                int rightChild = index + N - 1;// start的右节点index
+                for (int i = index + 1; i < length && i <= rightChild; i++) {// 选择排序法找出start的叶子节点中的最X值
+                    int cs = arr[i].compareTo(arr[index]);
+                    if (cs > 0 == ascending) index = i;
+                }
+                int cs = arr[index].compareTo(holeVal);
+                if (cs > 0 == ascending) {
+                    arr[holeIdx] = arr[index];
+                    holeIdx = index;
+                    index = index * N + 1;// 找到新坑洞，继续填坑
+                } else break;
+            }
+            arr[holeIdx] = holeVal;
+        }
 		
 	});
-	
+
 	SortingType(Sortable s) {
 		this.s = s;
 	}
-	
+
 	private Sortable s;
-	
-	public <T extends Comparable<T>> void sort(T[] arr, boolean ascend) {
-		s.sort(arr, ascend);
+
+	public <T extends Comparable<T>> void sort(T[] arr, boolean ascending) {
+		s.sort(arr, ascending);
 	}
 	
 	private static <T extends Comparable<T>> void swap(T[] arr, int i, int j) {
@@ -287,89 +280,5 @@ public enum SortingType {
 		arr[i] = arr[j];
 		arr[j] = tmp;
 	}
-	
-	/**
-	 * N叉堆的入口方法
-	 * @param arr
-	 * @param ascend
-	 */
-	private static <T extends Comparable<T>> void heapSort(T[] arr, boolean ascend, int size) {
-		build(arr, ascend, size);//构建二叉堆
-//		System.out.println(Arrays.toString(srcArr));
-		for (int i = arr.length - 1; i > 0; i--) {
-			swap(arr, 0, i);
-			sink(arr, i, 0, ascend, size);//重构二叉堆
-		}
-	}
-	
-	private static <T extends Comparable<T>> void build(T[] arr, boolean ascend, int size) {
-		for (int i = (arr.length - 2) / size; i >= 0; i--) {
-			sink(arr, arr.length, i, ascend, size);
-		}
-	}
-	
-	/**
-	 * 对arr[start]节点执行二叉堆重构
-	 * @param arr
-	 * @param length
-	 * @param start
-	 * @param ascend
-	 */
-	private static <T extends Comparable<T>> void sink(T[] arr, int length, int start, boolean ascend, int size) {
-		T tmp = arr[start];
-		int hole = start;
-		int index = start * size + 1;
-		while (index < length) {
-			int rightChild = index + size - 1;
-			for (int i = index + 1; i < length && i <= rightChild; i++) {
-				int cs = arr[i].compareTo(arr[index]);
-				if (cs > 0 == ascend) index = i;
-			}
-//			if (index + 1 < length) {
-//				int cs = srcArr[index + 1].compareTo(srcArr[index]);
-//				if (cs > 0 == ascend) index++;
-//			}
-			int cs = arr[index].compareTo(tmp);
-			if (cs > 0 == ascend) {
-				arr[hole] = arr[index];
-				hole = index;
-				index = index * size + 1;
-			} else break;
-		}
-		arr[hole] = tmp;
-	}
-	
-	/**
-	 * 打印数组，用于测试
-	 * @param arr
-	 * @param src
-	 * @param dest
-	 */
-	public static <T extends Comparable<T>> void printDetail(T[] arr, int src, int dest, int num) {
-		System.out.print(num + " - [");
-		for (int k = 0; k < arr.length; k++) {
-			if (k > 0) System.out.print(",");
-			if (k == src) {
-				System.out.printf("%4s", "*" + arr[src]);
-			} else if (k == dest) {
-				System.out.printf("%4s", "@" + arr[k]);
-			} else {
-				System.out.printf("%4s", arr[k]);
-			}
-		}
-		System.out.println("]");
-	}
-	
-	/**
-	 * 打印数组，用于测试
-	 * @param arr
-	 */
-	public static <T extends Comparable<T>> void printDetail(T[] arr) {
-		System.out.print("R - [");
-		for (int k = 0; k < arr.length; k++) {
-			if (k > 0) System.out.print(",");
-			System.out.printf("%4s", arr[k]);
-		}
-		System.out.println("]");
-	}
+
 }
