@@ -222,7 +222,7 @@ public enum SortingType {
         }
 
         /**
-         * 数组元素从0顺序开始，和N叉堆从上到下从左到右的树节点一一对应，所以N叉堆其实是完全N叉堆
+         * 数组元素从0开始依次和N叉堆从上到下从左到右的树节点一一对应，所以N叉堆其实就是完全N叉堆
          * @param arr
          * @param ascending
          * @param N
