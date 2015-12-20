@@ -13,18 +13,16 @@ public enum SortingType {
 
         @Override
         public <T extends Comparable<T>> void sort(T[] arr, boolean ascending) {
-            int lastSwappedIndex = Integer.MAX_VALUE;// 优化一
-            for (int i = arr.length - 1; i > 0; i--) {
-                boolean alreadyOrdered = true;// 优化二
-                int endPoint = lastSwappedIndex < i ? lastSwappedIndex : i;
-                for (int j = 0; j < endPoint; j++) {
+            for (int i = arr.length - 1, ceil = -1/* 优化一 */; i > 0; i--) {
+                boolean isOrdered = true;// 优化二
+                for (int j = 0; j < i; j++) {
                     if (arr[j + 1].compareTo(arr[j]) < 0 == ascending) {
-                        swap(arr, j, j + 1);
-                        lastSwappedIndex = j;
-                        alreadyOrdered = false;
+                        swap(arr, j, ceil = j + 1);
+                        isOrdered = false;
                     }
                 }
-                if (alreadyOrdered) break;// 如果某次遍历发现没有进行过交换操作，那么说明该数组已经有序可以结束了。
+                if (isOrdered) break;// 优化二：如果某次遍历发现没有进行过交换操作，那么说明该数组已经有序。
+                i = ceil;// 优化一：该数组从ceil往后已经有序，所以只需要对ceil之前的部分进行排序即可
             }
         }
 
