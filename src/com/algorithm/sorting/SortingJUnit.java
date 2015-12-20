@@ -87,17 +87,17 @@ public class SortingJUnit {
         sort(SortingType.SHELL);
     }
 
-	@Test
+//	@Test
     public void merge() {
         sort(SortingType.MERGE);
     }
 
-	@Test
+//	@Test
     public void quick() {
         sort(SortingType.QUICK);
     }
 
-    @Test
+//    @Test
     public void heap() {
         sort(SortingType.HEAP);
     }

@@ -84,12 +84,12 @@ public enum SortingType {
                 for (int i = gap; i < arr.length; i++) {
                     T tmp = arr[i];
                     int j;
-                    for (j = i; j >= gap; j -= gap) {
-                        int res = arr[j - gap].compareTo(tmp);
+                    for (j = i - gap; j >= 0; j -= gap) {
+                        int res = arr[j].compareTo(tmp);
                         if (res == 0 || res < 0 == ascending) break;
-                        arr[j] = arr[j - gap];
+                        arr[j + gap] = arr[j];
                     }
-                    if (j != i) arr[j] = tmp;
+                    arr[j + gap] = tmp;
                 }
                 gap /= divider;
             }
