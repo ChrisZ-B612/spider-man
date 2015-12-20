@@ -235,20 +235,20 @@ public enum SortingType {
          * @param N
          */
         private <T extends Comparable<T>> void sink(T[] arr, int start, int length, int N, boolean ascending) {
-            T holeVal = arr[start];
-            int holeIdx = start, index = holeIdx * N + 1;
+            T holeValue = arr[start];
+            int holeIndex = start, index = holeIndex * N + 1;
             while (index < length) {
                 int rightChild = index + N - 1;
                 for (int i = index + 1; i < length && i <= rightChild; i++) {
                     if (arr[i].compareTo(arr[index]) > 0 == ascending) index = i;
                 }
-                if (arr[index].compareTo(holeVal) > 0 == ascending) {// 挖到新坑洞
-                    arr[holeIdx] = arr[index];
-                    holeIdx = index;
+                if (arr[index].compareTo(holeValue) > 0 == ascending) {// 挖到新坑洞
+                    arr[holeIndex] = arr[index];
+                    holeIndex = index;
                     index = index * N + 1;// 继续找新坑洞
                 } else break;
             }
-            arr[holeIdx] = holeVal;
+            arr[holeIndex] = holeValue;
         }
 
     });
