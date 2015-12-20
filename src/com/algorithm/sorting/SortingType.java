@@ -231,17 +231,17 @@ public enum SortingType {
         /**
          * 以arr[start]节点为根节点开始执行N叉堆重构
          * @param arr
-         * @param len
+         * @param length
          * @param start
          * @param ascending
          * @param N
          */
-        private <T extends Comparable<T>> void sink(T[] arr, int start, int len, int N, boolean ascending) {
+        private <T extends Comparable<T>> void sink(T[] arr, int start, int length, int N, boolean ascending) {
             T holeVal = arr[start];
             int holeIdx = start, index = holeIdx * N + 1;
-            while (index < len) {
+            while (index < length) {
                 int rightChild = index + N - 1;
-                for (int i = index + 1; i < len && i <= rightChild; i++) {
+                for (int i = index + 1; i < length && i <= rightChild; i++) {
                     if (arr[i].compareTo(arr[index]) > 0 == ascending) index = i;
                 }
                 if (arr[index].compareTo(holeVal) > 0 == ascending) {// 挖到新坑洞
