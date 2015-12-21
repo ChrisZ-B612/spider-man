@@ -1,7 +1,7 @@
 package com.algorithm.sorting;
 
 /**
- * @author biao.zhang@hp.com
+ * @author Chris, Z
  * @date Aug 23, 2012 3:06:18 PM
  */
 public enum SortingType {
@@ -9,7 +9,7 @@ public enum SortingType {
     /**
      * 1、冒泡排序
      */
-    BUBBLE(new Sortable() {
+    BUBBLE(new ISorting() {
 
         @Override
         public <T extends Comparable<T>> void sort(T[] arr, boolean ascending) {
@@ -31,7 +31,7 @@ public enum SortingType {
     /**
      * 2、选择排序
      */
-    SELECT(new Sortable() {
+    SELECT(new ISorting() {
 
         @Override
         public <T extends Comparable<T>> void sort(T[] arr, boolean ascending) {
@@ -51,7 +51,7 @@ public enum SortingType {
     /**
      * 3、插入排序
      */
-    INSERT(new Sortable() {
+    INSERT(new ISorting() {
 
         @Override
         public <T extends Comparable<T>> void sort(T[] arr, boolean ascending) {
@@ -72,7 +72,7 @@ public enum SortingType {
     /**
      * 4、希尔排序
      */
-    SHELL(new Sortable() {
+    SHELL(new ISorting() {
 
         @Override
         public <T extends Comparable<T>> void sort(T[] arr, boolean ascending) {
@@ -100,7 +100,7 @@ public enum SortingType {
     /**
      * 5、归并排序
      */
-    MERGE(new Sortable() {
+    MERGE(new ISorting() {
 
         @Override
         public <T extends Comparable<T>> void sort(T[] arr, boolean ascending) {
@@ -159,7 +159,7 @@ public enum SortingType {
     /**
      * 6、快速排序
      */
-    QUICK(new Sortable() {
+    QUICK(new ISorting() {
 
         @Override
         public <T extends Comparable<T>> void sort(T[] arr, boolean ascending) {
@@ -167,7 +167,7 @@ public enum SortingType {
         }
 
         private <T extends Comparable<T>> void sort(T[] arr, int start, int end, boolean ascending) {
-            if (start >= end - 1) return;
+            if (start >= end - 1) return;// 跳出递归
             int holeIndex = start, leftIndex = start + 1, rightIndex = end - 1;
             boolean leftToRight = false;
             T holeValue = arr[holeIndex];
@@ -198,7 +198,7 @@ public enum SortingType {
     /**
      * 7、堆排序
      */
-    HEAP(new Sortable() {
+    HEAP(new ISorting() {
 
         @Override
         public <T extends Comparable<T>> void sort(T[] arr, boolean ascending) {
@@ -229,10 +229,10 @@ public enum SortingType {
         /**
          * 以arr[start]节点为根节点开始执行N叉堆重构
          * @param arr
-         * @param length
          * @param start
-         * @param ascending
+         * @param length
          * @param N
+         * @param ascending
          */
         private <T extends Comparable<T>> void sink(T[] arr, int start, int length, int N, boolean ascending) {
             T holeValue = arr[start];
@@ -253,11 +253,11 @@ public enum SortingType {
 
     });
 
-    SortingType(Sortable s) {
+    SortingType(ISorting s) {
         this.s = s;
     }
 
-    private Sortable s;
+    private ISorting s;
 
     public <T extends Comparable<T>> void sort(T[] arr, boolean ascending) {
         s.sort(arr, ascending);

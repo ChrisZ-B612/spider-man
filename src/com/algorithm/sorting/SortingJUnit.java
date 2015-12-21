@@ -8,7 +8,7 @@ import org.junit.Test;
 import java.util.*;
 
 /**
- * @author biao.zhang@hp.com
+ * @author Chris, Z
  * @date Aug 23, 2012 3:29:43 PM
  */
 public class SortingJUnit {
@@ -37,7 +37,7 @@ public class SortingJUnit {
         }
     }
 
-    private static void sort(SortingType type) {
+    private void sort(SortingType type) {
         Integer[] myArr = srcArr.clone();
         Assert.assertFalse(isOrdered(myArr, ascending));
         long start = Calendar.getInstance().getTimeInMillis();
@@ -82,7 +82,7 @@ public class SortingJUnit {
         sort(SortingType.INSERT);
     }
 
-	@Test
+//	@Test
     public void shell() {
         sort(SortingType.SHELL);
     }
@@ -92,12 +92,12 @@ public class SortingJUnit {
         sort(SortingType.MERGE);
     }
 
-//	@Test
+	@Test
     public void quick() {
         sort(SortingType.QUICK);
     }
 
-//    @Test
+//  @Test
     public void heap() {
         sort(SortingType.HEAP);
     }
