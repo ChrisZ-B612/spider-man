@@ -3,6 +3,15 @@ package com.algorithm.sorting;
 import java.util.*;
 
 /**
+ * 排序速度排行榜：
+ * 1、快速排序
+ * 2、Java排序
+ * 3、归并排序
+ * 4、堆排序
+ * 5、希尔排序
+ * 6、选择排序
+ * 7、插入排序
+ * 8、冒泡排序
  * @author Chris, Z
  * @date Aug 23, 2012 3:06:18 PM
  */
@@ -100,7 +109,65 @@ public enum SortingType {
     }),
 
     /**
-     * 5、归并排序
+     * 5、堆排序
+     */
+    HEAP(new ISorting() {
+
+        @Override
+        public <T extends Comparable<T>> void sort(T[] arr, boolean ascending) {
+            sort(arr, 3, ascending);
+        }
+
+        private <T extends Comparable<T>> void sort(T[] arr, int N, boolean ascending) {
+            buildNTree(arr, N, ascending);// 构建N叉堆
+            for (int i = arr.length - 1; i > 0; i--) {
+                swap(arr, 0, i);
+                sink(arr, 0, i, N, ascending);
+            }
+        }
+
+        /**
+         * 数组元素从0开始依次和N叉堆从上到下从左到右的树节点一一对应，所以构建的N叉堆其实是完全N叉堆
+         * @param arr
+         * @param ascending
+         * @param N
+         * @param <T>
+         */
+        private <T extends Comparable<T>> void buildNTree(T[] arr, int N, boolean ascending) {
+            for (int i = (arr.length - 2) / N; i >= 0; i--) {
+                sink(arr, i, arr.length, N, ascending);
+            }
+        }
+
+        /**
+         * 以arr[start]节点为根节点开始执行N叉堆重构
+         * @param arr
+         * @param start
+         * @param length
+         * @param N
+         * @param ascending
+         */
+        private <T extends Comparable<T>> void sink(T[] arr, int start, int length, int N, boolean ascending) {
+            T holeValue = arr[start];
+            int holeIndex = start, index = holeIndex * N + 1;
+            while (index < length) {
+                int rightChild = index + N - 1;
+                for (int i = index + 1; i < length && i <= rightChild; i++) {
+                    if (arr[i].compareTo(arr[index]) > 0 == ascending) index = i;
+                }
+                if (arr[index].compareTo(holeValue) > 0 == ascending) {// 挖到新坑洞
+                    arr[holeIndex] = arr[index];
+                    holeIndex = index;
+                    index = index * N + 1;// 继续找新坑洞
+                } else break;
+            }
+            arr[holeIndex] = holeValue;
+        }
+
+    }),
+
+    /**
+     * 6、归并排序
      */
     MERGE(new ISorting() {
 
@@ -159,7 +226,19 @@ public enum SortingType {
     }),
 
     /**
-     * 6、快速排序
+     * 7、Java默认排序
+     */
+    JAVA(new ISorting() {
+
+        @Override
+        public <T extends Comparable<T>> void sort(T[] arr, boolean ascending) {
+            Arrays.sort(arr, ascending ? Comparator.naturalOrder() : Comparator.reverseOrder());
+        }
+
+    }),
+
+    /**
+     * 8、快速排序
      */
     QUICK(new ISorting() {
 
@@ -193,76 +272,6 @@ public enum SortingType {
             arr[holeIndex] = holeValue;
             sort(arr, start, holeIndex, ascending);
             sort(arr, holeIndex + 1, end, ascending);
-        }
-
-    }),
-
-    /**
-     * 7、堆排序
-     */
-    HEAP(new ISorting() {
-
-        @Override
-        public <T extends Comparable<T>> void sort(T[] arr, boolean ascending) {
-            sort(arr, 3, ascending);
-        }
-
-        private <T extends Comparable<T>> void sort(T[] arr, int N, boolean ascending) {
-            buildNTree(arr, N, ascending);// 构建N叉堆
-            for (int i = arr.length - 1; i > 0; i--) {
-                swap(arr, 0, i);
-                sink(arr, 0, i, N, ascending);
-            }
-        }
-
-        /**
-         * 数组元素从0开始依次和N叉堆从上到下从左到右的树节点一一对应，所以构建的N叉堆其实是完全N叉堆
-         * @param arr
-         * @param ascending
-         * @param N
-         * @param <T>
-         */
-        private <T extends Comparable<T>> void buildNTree(T[] arr, int N, boolean ascending) {
-            for (int i = (arr.length - 2) / N; i >= 0; i--) {
-                sink(arr, i, arr.length, N, ascending);
-            }
-        }
-
-        /**
-         * 以arr[start]节点为根节点开始执行N叉堆重构
-         * @param arr
-         * @param start
-         * @param length
-         * @param N
-         * @param ascending
-         */
-        private <T extends Comparable<T>> void sink(T[] arr, int start, int length, int N, boolean ascending) {
-            T holeValue = arr[start];
-            int holeIndex = start, index = holeIndex * N + 1;
-            while (index < length) {
-                int rightChild = index + N - 1;
-                for (int i = index + 1; i < length && i <= rightChild; i++) {
-                    if (arr[i].compareTo(arr[index]) > 0 == ascending) index = i;
-                }
-                if (arr[index].compareTo(holeValue) > 0 == ascending) {// 挖到新坑洞
-                    arr[holeIndex] = arr[index];
-                    holeIndex = index;
-                    index = index * N + 1;// 继续找新坑洞
-                } else break;
-            }
-            arr[holeIndex] = holeValue;
-        }
-
-    }),
-
-    /**
-     * 8、Java默认排序
-     */
-    JAVA(new ISorting() {
-
-        @Override
-        public <T extends Comparable<T>> void sort(T[] arr, boolean ascending) {
-            Arrays.sort(arr, ascending ? Comparator.naturalOrder() : Comparator.reverseOrder());
         }
 
     });
