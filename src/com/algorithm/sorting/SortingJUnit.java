@@ -19,7 +19,7 @@ public class SortingJUnit {
 
     @BeforeClass
     public static void beforeStart() {
-        int size = 1000000;
+        int size = 10000;
 		System.out.printf("Size  : %d\n", size);
         srcArr = generateArray(size);
 //		srcArr = new Integer[] {3, 1, 5, 8, 1, 2};
@@ -67,39 +67,44 @@ public class SortingJUnit {
         return isOrdered;
     }
 
-//	@Test
+	@Test
     public void bubble() {
         sort(SortingType.BUBBLE);
     }
 
-//	@Test
-    public void select() {
-        sort(SortingType.SELECT);
-    }
-
-//	@Test
+	@Test
     public void insert() {
         sort(SortingType.INSERT);
     }
 
-//	@Test
+    @Test
+    public void select() {
+        sort(SortingType.SELECT);
+    }
+
+	@Test
     public void shell() {
         sort(SortingType.SHELL);
     }
 
-//	@Test
+    @Test
+    public void heap() {
+        sort(SortingType.HEAP);
+    }
+
+    @Test
     public void merge() {
         sort(SortingType.MERGE);
     }
 
-	@Test
-    public void quick() {
-        sort(SortingType.QUICK);
+    @Test
+    public void java() {
+        sort(SortingType.JAVA);
     }
 
-//  @Test
-    public void heap() {
-        sort(SortingType.HEAP);
+    @Test
+    public void quick() {
+        sort(SortingType.QUICK);
     }
 
 }

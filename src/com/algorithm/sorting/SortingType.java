@@ -1,5 +1,7 @@
 package com.algorithm.sorting;
 
+import java.util.*;
+
 /**
  * @author Chris, Z
  * @date Aug 23, 2012 3:06:18 PM
@@ -249,6 +251,18 @@ public enum SortingType {
                 } else break;
             }
             arr[holeIndex] = holeValue;
+        }
+
+    }),
+
+    /**
+     * 8、Java默认排序
+     */
+    JAVA(new ISorting() {
+
+        @Override
+        public <T extends Comparable<T>> void sort(T[] arr, boolean ascending) {
+            Arrays.sort(arr, ascending ? Comparator.naturalOrder() : Comparator.reverseOrder());
         }
 
     });
